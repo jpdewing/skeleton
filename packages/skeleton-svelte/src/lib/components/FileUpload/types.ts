@@ -1,7 +1,39 @@
 import type { Snippet } from 'svelte';
 import * as fileUpload from '@zag-js/file-upload';
+import type { FileRejection} from '@zag-js/file-upload';
+
+export interface FileUploadApi {
+  /**
+   * Function to delete the file from the list
+   */
+  deleteFile(file: File): void
+  /**
+   * The accepted files that have been dropped or selected
+   */
+  acceptedFiles: File[]
+  /**
+   * The files that have been rejected
+   */
+  rejectedFiles: FileRejection[]
+  /**
+   * Function to set the value
+   */
+  setFiles(files: File[]): void
+  /**
+   * Function to clear the value
+   */
+  clearFiles(): void
+  /**
+   * Function to clear the rejected files
+   */
+  clearRejectedFiles(): void  
+}
 
 export interface FileUploadProps extends Omit<fileUpload.Context, 'id'> {
+
+  /** Bind to subset of underlying api methods. */
+  _api?: FileUploadApi;      
+  
 	/** Set the interface text value. */
 	label?: string;
 	/** Set the interface subtext value. */
@@ -85,3 +117,5 @@ export interface FileUploadProps extends Omit<fileUpload.Context, 'id'> {
 	/** Provide an icon for the remove file action. */
 	iconFileRemove?: Snippet;
 }
+
+  

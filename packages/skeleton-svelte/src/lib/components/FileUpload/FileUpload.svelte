@@ -3,7 +3,7 @@
 	import { useMachine, normalizeProps } from '@zag-js/svelte';
 	import { useId } from '$lib/internal/use-id.js';
 	import type { FileUploadProps } from './types.js';
-
+ 
 	// Props
 	let {
 		label = `Select file or drag here`,
@@ -47,14 +47,31 @@
 		iconInterface,
 		iconFile,
 		iconFileRemove,
-		// Zag
-		...zagProps
+		
+    // Zag Api subset
+    _api = $bindable(),
+    
+    // Zag
+		...zagProps    
+
 	}: FileUploadProps = $props();
 
 	// Zag
 	const [snapshot, send] = useMachine(fileUpload.machine({ id: useId() }), { context: zagProps });
 	const api = $derived(fileUpload.connect(snapshot, send, normalizeProps));
-
+  
+  // bind api subset
+  $effect(() => {    
+    _api = {
+      acceptedFiles: api.acceptedFiles,
+      rejectedFiles: api.rejectedFiles,
+      clearFiles: api.clearFiles,
+      clearRejectedFiles: api.clearRejectedFiles,
+      deleteFile: api.deleteFile,
+      setFiles: api.setFiles
+    }
+  })  
+  
 	// Reactive
 	const rxDisabled = $derived(snapshot.context.disabled ? stateDisabled : '');
 	const rxInvalid = $derived(api.rejectedFiles.length > 0 ? stateInvalid : interfaceBorderColor);

@@ -1,10 +1,19 @@
 <script lang="ts">
 	import { FileUpload } from '$lib/index.js';
-	// Icons
-	import IconDropzone from 'lucide-svelte/icons/image-plus';
-	import IconFile from 'lucide-svelte/icons/paperclip';
-	import IconUpload from 'lucide-svelte/icons/upload';
-	import IconRemove from 'lucide-svelte/icons/x-circle';
+  import { type FileUploadApi } from '$lib/components/FileUpload/types.js';
+
+  //let files: File[];
+  
+  let fileUpload: FileUploadApi;
+
+  function clearFiles() {    
+    fileUpload.clearFiles();   
+  }
+
+  function clearRejectedFiles() {    
+    fileUpload.clearRejectedFiles();   
+  }
+
 </script>
 
 <div class="space-y-10">
@@ -12,41 +21,28 @@
 		<h1 class="h1">File Upload</h1>
 	</header>
 	<section class="space-y-4">
-		<h2 class="h2">Dropzone</h2>
-		<!-- Simple -->
-		<FileUpload name="example" accept="image/*" maxFiles={2} onFileChange={console.log} onFileReject={console.error} />
-		<!-- Customized -->
-		<FileUpload
-			name="example"
-			accept="image/*"
-			maxFiles={2}
-			subtext="Attach up to 2 files."
-			onFileChange={console.log}
-			onFileReject={console.error}
-		>
-			{#snippet iconInterface()}<IconDropzone class="size-8" />{/snippet}
-			{#snippet iconFile()}<IconFile class="size-4" />{/snippet}
-			{#snippet iconFileRemove()}<IconRemove class="size-4" />{/snippet}
-		</FileUpload>
-	</section>
-	<section class="space-y-4">
-		<h2 class="h2">Button</h2>
-		<FileUpload name="example-button" accept="image/*" onFileChange={console.log} maxFiles={2}>
-			<button class="btn preset-filled">
-				<IconUpload class="size-4" />
-				<span>Select File</span>
-			</button>
-		</FileUpload>
-	</section>
-	<section class="space-y-4">
-		<h2 class="h2">Disabled</h2>
-		<FileUpload name="example" disabled />
-		<FileUpload name="example" disabled>
-			<button class="btn preset-filled">Disabled</button>
-		</FileUpload>
-	</section>
-	<section class="space-y-4">
-		<h2 class="h2">RTL</h2>
-		<FileUpload name="example" dir="rtl" />
-	</section>
+	
+  
+    <section class="space-y-4">
+      <h3 class="h3">Binding</h3>
+
+      {#if fileUpload && fileUpload.acceptedFiles.length > 0} 
+        <p>Accepted files:</p>
+        {#each fileUpload.acceptedFiles as file}
+          <pre class="pre">{file.name}</pre>
+        {/each}
+        <button on:click={clearFiles}>Remove files</button>
+      {/if}
+
+      {#if fileUpload && fileUpload.rejectedFiles.length > 0} 
+        <p>Rejected files:</p>
+        {#each fileUpload.rejectedFiles as rejectedFile}
+          <pre class="pre">{rejectedFile.file.name} - {rejectedFile.errors}</pre>
+        {/each}
+        <button on:click={clearRejectedFiles}>Remove rejected files</button>
+      {/if}     
+     
+      <FileUpload bind:_api={fileUpload} name="binding" maxFiles={2} />
+    </section>	
+	
 </div>
